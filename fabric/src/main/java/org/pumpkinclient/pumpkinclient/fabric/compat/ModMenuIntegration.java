@@ -35,6 +35,7 @@ public final class ModMenuIntegration implements ModMenuApi {
                 .setDefaultValue(CompressionAlgorithm.ZSTD)
                 .setSaveConsumer(config::setCompressionAlgorithm)
                 .setEnumNameProvider(anEnum -> Component.translatable("pumpkinclient.algorithm." + ((CompressionAlgorithm) anEnum).getId()))
+                .setTooltip(Component.translatable("pumpkinclient.config.restart_required"))
                 .build());
 
         category.addEntry(entryBuilder.startIntSlider(

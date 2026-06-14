@@ -3,5 +3,6 @@
   "pumpkinclient.config.compression_level": "Compression Level",
   "pumpkinclient.config.title": "PumpkinClient Settings",
   "pumpkinclient.algorithm.zlib": "ZLIB",
-  "pumpkinclient.algorithm.zstd": "ZSTD (zstd)"
+  "pumpkinclient.algorithm.zstd": "ZSTD (zstd)",
+  "pumpkinclient.config.restart_required": "A restart is required for changes to take effect"
 }

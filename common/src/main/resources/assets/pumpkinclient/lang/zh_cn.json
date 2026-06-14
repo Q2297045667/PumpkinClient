@@ -3,5 +3,6 @@
   "pumpkinclient.config.compression_level": "压缩等级",
   "pumpkinclient.config.title": "PumpkinClient 设置",
   "pumpkinclient.algorithm.zlib": "ZLIB",
-  "pumpkinclient.algorithm.zstd": "ZSTD (zstd)"
+  "pumpkinclient.algorithm.zstd": "ZSTD (zstd)",
+  "pumpkinclient.config.restart_required": "切换后需要重启游戏才能生效"
 }
