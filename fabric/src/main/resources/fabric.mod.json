@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "pumpkinclient",
+  "version": "${version}",
+  "name": "PumpkinClient",
+  "description": "",
+  "authors": [
+    "Missng_Love"
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "MIT",
+  "icon": "assets/pumpkinclient/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "org.pumpkinclient.pumpkinclient.fabric.PumpkinclientFabric"
+    ],
+    "client": [
+      "org.pumpkinclient.pumpkinclient.fabric.client.PumpkinclientFabricClient"
+    ]
+  },
+  "mixins": [
+    "pumpkinclient.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "architectury": ">=19.0.1",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

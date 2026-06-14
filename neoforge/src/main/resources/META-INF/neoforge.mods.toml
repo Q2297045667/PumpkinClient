@@ -1,0 +1,38 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "pumpkinclient"
+version = "${version}"
+displayName = "PumpkinClient"
+authors = "Missng_Love"
+description = '''
+
+'''
+#logoFile = ""
+
+[[dependencies.pumpkinclient]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.pumpkinclient]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.11,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.pumpkinclient]]
+modId = "architectury"
+type = "required"
+versionRange = "[19.0.1,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[mixins]]
+config = "pumpkinclient.mixins.json"
