@@ -30,7 +30,7 @@ side = "BOTH"
 [[dependencies.pumpkinclient]]
 modId = "architectury"
 type = "required"
-versionRange = "[19.0.1,)"
+versionRange = "[13,)"
 ordering = "AFTER"
 side = "BOTH"
 
