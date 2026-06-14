@@ -1,0 +1,7 @@
+{
+  "pumpkinclient.config.compression_algorithm": "压缩算法",
+  "pumpkinclient.config.compression_level": "压缩等级",
+  "pumpkinclient.config.title": "PumpkinClient 设置",
+  "pumpkinclient.algorithm.zlib": "ZLIB",
+  "pumpkinclient.algorithm.zstd": "ZSTD (zstd)"
+}

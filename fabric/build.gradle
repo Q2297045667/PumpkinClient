@@ -31,6 +31,15 @@ dependencies {
 
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
 
+    // Cloth Config for configuration GUI
+    modImplementation "me.shedaniel.cloth:cloth-config-fabric:$rootProject.cloth_config_version"
+
+    // ModMenu integration for config screen access
+    modImplementation "com.terraformersmc:modmenu:11.0.3"
+
+    // zstd-jni bundled into mod
+    shadowBundle "com.github.luben:zstd-jni:$rootProject.zstd_jni_version"
+
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 }

@@ -4,8 +4,12 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "CompressionDecoderMixin",
+    "CompressionEncoderMixin"
   ],
   "mixins": [
+    "CompressionDecoderMixin",
+    "CompressionEncoderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
