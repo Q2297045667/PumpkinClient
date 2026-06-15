@@ -5,11 +5,13 @@
   "minVersion": "0.8",
   "client": [
     "CompressionDecoderMixin",
-    "CompressionEncoderMixin"
+    "CompressionEncoderMixin",
+    "ConnectionMixin"
   ],
   "mixins": [
     "CompressionDecoderMixin",
-    "CompressionEncoderMixin"
+    "CompressionEncoderMixin",
+    "ConnectionMixin"
   ],
   "injectors": {
     "defaultRequire": 1
