@@ -13,6 +13,7 @@ public final class NetworkCompression {
         return switch (algorithm) {
             case ZLIB -> compressZlib(input, level);
             case ZSTD -> compressZstd(input, level);
+            case AUTO -> throw new IllegalArgumentException("AUTO is not a valid compression algorithm");
         };
     }
 
@@ -20,6 +21,7 @@ public final class NetworkCompression {
         return switch (algorithm) {
             case ZLIB -> decompressZlib(input, uncompressedSize);
             case ZSTD -> decompressZstd(input, uncompressedSize);
+            case AUTO -> throw new IllegalArgumentException("AUTO is not a valid compression algorithm");
         };
     }
 

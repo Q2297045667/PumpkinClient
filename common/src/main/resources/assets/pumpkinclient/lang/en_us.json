@@ -1,10 +1,11 @@
 {
   "pumpkinclient.config.compression_algorithm": "Compression Algorithm",
   "pumpkinclient.config.compression_level": "Compression Level",
-  "pumpkinclient.config.max_threads": "Max Threads (Zstd)",
+  "pumpkinclient.config.max_threads": "Max Threads (Zstd only)",
   "pumpkinclient.config.max_threads.tooltip": "Number of threads for Zstd compression. 0 = auto-detect.",
   "pumpkinclient.config.title": "PumpkinClient Settings",
-  "pumpkinclient.config.restart_required": "A restart is required for changes to take effect",
-  "pumpkinclient.algorithm.ZLib": "ZLib",
-  "pumpkinclient.algorithm.Zstd": "Zstd"
+  "pumpkinclient.config.restart_required": "Changes take effect on the next connection",
+  "pumpkinclient.algorithm.Auto": "Auto (recommended)",
+  "pumpkinclient.algorithm.ZLib": "ZLib (vanilla compatible)",
+  "pumpkinclient.algorithm.Zstd": "Zstd (Pumpkin server)"
 }

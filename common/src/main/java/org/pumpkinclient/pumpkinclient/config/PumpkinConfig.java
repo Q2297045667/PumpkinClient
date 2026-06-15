@@ -2,6 +2,7 @@ package org.pumpkinclient.pumpkinclient.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.annotations.Expose;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,11 +19,14 @@ public final class PumpkinConfig {
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .excludeFieldsWithoutExposeAnnotation()
+            .registerTypeAdapter(CompressionAlgorithm.class,
+                    (JsonDeserializer<CompressionAlgorithm>) (json, type, context) ->
+                            CompressionAlgorithm.fromId(json.getAsString()))
             .create();
     private static PumpkinConfig INSTANCE;
 
     @Expose
-    private CompressionAlgorithm compressionAlgorithm = CompressionAlgorithm.ZLIB;
+    private CompressionAlgorithm compressionAlgorithm = CompressionAlgorithm.AUTO;
 
     @Expose
     private int compressionLevel = 4;
@@ -55,7 +59,7 @@ public final class PumpkinConfig {
 
     public void setCompressionLevel(int compressionLevel) {
         this.compressionLevel = switch (compressionAlgorithm) {
-            case ZSTD -> NetworkCompression.clampZstdLevel(compressionLevel);
+            case ZSTD, AUTO -> NetworkCompression.clampZstdLevel(compressionLevel);
             case ZLIB -> NetworkCompression.clampZlibLevel(compressionLevel);
         };
     }
@@ -79,7 +83,7 @@ public final class PumpkinConfig {
                 clampLevel();
                 LOGGER.info("Loaded config: algorithm={}, level={}, maxThreads={}",
                         compressionAlgorithm.getId(), compressionLevel, maxThreads);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOGGER.error("Failed to load config, using defaults", e);
                 INSTANCE = new PumpkinConfig();
             }
@@ -101,7 +105,7 @@ public final class PumpkinConfig {
 
     private void clampLevel() {
         compressionLevel = switch (compressionAlgorithm) {
-            case ZSTD -> NetworkCompression.clampZstdLevel(compressionLevel);
+            case ZSTD, AUTO -> NetworkCompression.clampZstdLevel(compressionLevel);
             case ZLIB -> NetworkCompression.clampZlibLevel(compressionLevel);
         };
     }

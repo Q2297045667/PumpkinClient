@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.CompressionEncoder;
 import net.minecraft.network.FriendlyByteBuf;
+import org.pumpkinclient.pumpkinclient.Pumpkinclient;
 import org.pumpkinclient.pumpkinclient.config.PumpkinConfig;
 import org.pumpkinclient.pumpkinclient.network.CompressionAlgorithm;
 import org.pumpkinclient.pumpkinclient.network.NetworkCompression;
@@ -21,10 +22,11 @@ public abstract class CompressionEncoderMixin {
 
     @Inject(method = "encode", at = @At("HEAD"), cancellable = true)
     private void onEncode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out, CallbackInfo ci) {
-        PumpkinConfig config = PumpkinConfig.getInstance();
-        if (config.getCompressionAlgorithm() != CompressionAlgorithm.ZSTD) {
+        CompressionAlgorithm effective = Pumpkinclient.getEffectiveAlgorithm();
+        if (effective != CompressionAlgorithm.ZSTD) {
             return;
         }
+        PumpkinConfig config = Pumpkinclient.getConfig();
         int size = in.readableBytes();
         if (size < this.threshold) {
             new FriendlyByteBuf(out).writeVarInt(0);
@@ -32,7 +34,8 @@ public abstract class CompressionEncoderMixin {
         } else {
             byte[] data = new byte[size];
             in.readBytes(data);
-            byte[] compressed = NetworkCompression.compress(data, CompressionAlgorithm.ZSTD, config.getCompressionLevel(), config.getMaxThreads());
+            byte[] compressed = NetworkCompression.compress(data, CompressionAlgorithm.ZSTD,
+                    config.getCompressionLevel(), config.getMaxThreads());
             new FriendlyByteBuf(out).writeVarInt(size);
             out.writeBytes(compressed);
         }
