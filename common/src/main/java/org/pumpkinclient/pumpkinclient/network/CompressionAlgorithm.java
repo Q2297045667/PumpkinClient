@@ -1,9 +1,22 @@
 package org.pumpkinclient.pumpkinclient.network;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum CompressionAlgorithm {
     ZLIB("ZLib"),
     ZSTD("Zstd"),
     AUTO("Auto");
+
+    private static final Map<String, CompressionAlgorithm> BY_ID;
+    static {
+        Map<String, CompressionAlgorithm> map = new HashMap<>();
+        for (CompressionAlgorithm algo : values()) {
+            map.put(algo.id.toLowerCase(), algo);
+        }
+        BY_ID = Collections.unmodifiableMap(map);
+    }
 
     private final String id;
 
@@ -16,11 +29,15 @@ public enum CompressionAlgorithm {
     }
 
     public static CompressionAlgorithm fromId(String id) {
-        for (CompressionAlgorithm algo : values()) {
-            if (algo.id.equalsIgnoreCase(id)) {
-                return algo;
-            }
-        }
-        return AUTO;
+        CompressionAlgorithm result = BY_ID.get(id.toLowerCase());
+        return result != null ? result : AUTO;
+    }
+
+    public CompressionAlgorithm fallback() {
+        return switch (this) {
+            case ZLIB -> ZSTD;
+            case ZSTD -> ZLIB;
+            case AUTO -> ZLIB;
+        };
     }
 }

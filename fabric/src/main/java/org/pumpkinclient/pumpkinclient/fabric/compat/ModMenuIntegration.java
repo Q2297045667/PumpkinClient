@@ -18,46 +18,51 @@ public final class ModMenuIntegration implements ModMenuApi {
         return this::createConfigScreen;
     }
 
+    @SuppressWarnings("unchecked")
     private Screen createConfigScreen(Screen parent) {
         PumpkinConfig config = Pumpkinclient.getConfig();
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
-                .setTitle(Component.translatable("pumpkinclient.config.title"))
+                .setTitle(translatable("pumpkinclient.config.title"))
                 .setSavingRunnable(Pumpkinclient::saveConfig);
 
-        ConfigCategory category = builder.getOrCreateCategory(Component.translatable("pumpkinclient.config.title"));
-        ConfigEntryBuilder entryBuilder = builder.entryBuilder();
+        ConfigCategory category = builder.getOrCreateCategory(translatable("pumpkinclient.config.title"));
+        ConfigEntryBuilder eb = builder.entryBuilder();
 
-        category.addEntry(entryBuilder.startEnumSelector(
-                        Component.translatable("pumpkinclient.config.compression_algorithm"),
+        category.addEntry(eb.startEnumSelector(
+                        translatable("pumpkinclient.config.compression_algorithm"),
                         CompressionAlgorithm.class,
                         config.getCompressionAlgorithm())
                 .setDefaultValue(CompressionAlgorithm.AUTO)
-                .setSaveConsumer(algo -> {
-                    config.setCompressionAlgorithm((CompressionAlgorithm) algo);
+                .setSaveConsumer(value -> {
+                    config.setCompressionAlgorithm((CompressionAlgorithm) value);
                     Pumpkinclient.resetEffectiveAlgorithm();
                 })
-                .setEnumNameProvider(anEnum -> Component.translatable("pumpkinclient.algorithm." + ((CompressionAlgorithm) anEnum).getId()))
-                .setTooltip(Component.translatable("pumpkinclient.config.restart_required"))
+                .setEnumNameProvider(value -> translatable("pumpkinclient.algorithm." + ((CompressionAlgorithm) value).getId()))
+                .setTooltip(translatable("pumpkinclient.config.restart_required"))
                 .build());
 
-        category.addEntry(entryBuilder.startIntSlider(
-                        Component.translatable("pumpkinclient.config.compression_level"),
+        category.addEntry(eb.startIntSlider(
+                        translatable("pumpkinclient.config.compression_level"),
                         config.getCompressionLevel(),
-                        0, 9)
+                        0, 22)
                 .setDefaultValue(4)
                 .setSaveConsumer(config::setCompressionLevel)
                 .build());
 
-        category.addEntry(entryBuilder.startIntSlider(
-                        Component.translatable("pumpkinclient.config.max_threads"),
+        category.addEntry(eb.startIntSlider(
+                        translatable("pumpkinclient.config.max_threads"),
                         config.getMaxThreads(),
                         0, 32)
                 .setDefaultValue(0)
-                .setTooltip(Component.translatable("pumpkinclient.config.max_threads.tooltip"))
+                .setTooltip(translatable("pumpkinclient.config.max_threads.tooltip"))
                 .setSaveConsumer(config::setMaxThreads)
                 .build());
 
         return builder.build();
+    }
+
+    private static Component translatable(String key) {
+        return Component.translatable(key);
     }
 }

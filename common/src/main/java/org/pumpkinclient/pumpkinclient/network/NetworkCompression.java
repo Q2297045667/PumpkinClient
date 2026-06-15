@@ -9,7 +9,7 @@ public final class NetworkCompression {
     private NetworkCompression() {
     }
 
-    public static byte[] compress(byte[] input, CompressionAlgorithm algorithm, int level, int maxThreads) {
+    public static byte[] compress(byte[] input, CompressionAlgorithm algorithm, int level) {
         return switch (algorithm) {
             case ZLIB -> compressZlib(input, level);
             case ZSTD -> compressZstd(input, level);
@@ -30,7 +30,7 @@ public final class NetworkCompression {
         try {
             deflater.setInput(input);
             deflater.finish();
-            byte[] buffer = new byte[input.length + 64];
+            byte[] buffer = new byte[deflateBound(input.length)];
             int total = 0;
             while (!deflater.finished()) {
                 int written = deflater.deflate(buffer, total, buffer.length - total);
@@ -58,7 +58,14 @@ public final class NetworkCompression {
         try {
             inflater.setInput(input);
             byte[] result = new byte[uncompressedSize];
-            inflater.inflate(result);
+            int total = 0;
+            while (!inflater.finished()) {
+                int written = inflater.inflate(result, total, result.length - total);
+                if (written == 0) {
+                    break;
+                }
+                total += written;
+            }
             return result;
         } catch (Exception e) {
             throw new RuntimeException("ZLIB decompression failed", e);
@@ -74,6 +81,10 @@ public final class NetworkCompression {
             throw new RuntimeException("ZSTD decompression failed with error " + decompressed);
         }
         return result;
+    }
+
+    private static int deflateBound(int inputLength) {
+        return inputLength + ((inputLength + 7) >> 3) + ((inputLength + 63) >> 6) + 16;
     }
 
     public static int clampZstdLevel(int level) {

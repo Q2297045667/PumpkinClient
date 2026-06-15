@@ -6,12 +6,14 @@
   "client": [
     "CompressionDecoderMixin",
     "CompressionEncoderMixin",
-    "ConnectionMixin"
+    "ConnectionMixin",
+    "MixinClientIntentionPacket"
   ],
   "mixins": [
     "CompressionDecoderMixin",
     "CompressionEncoderMixin",
-    "ConnectionMixin"
+    "ConnectionMixin",
+    "MixinClientIntentionPacket"
   ],
   "injectors": {
     "defaultRequire": 1

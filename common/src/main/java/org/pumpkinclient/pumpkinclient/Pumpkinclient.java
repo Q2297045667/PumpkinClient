@@ -38,10 +38,7 @@ public final class Pumpkinclient {
             return effectiveAlgorithm;
         }
         CompressionAlgorithm configured = getConfig().getCompressionAlgorithm();
-        if (configured == CompressionAlgorithm.AUTO) {
-            return CompressionAlgorithm.ZLIB;
-        }
-        return configured;
+        return configured == CompressionAlgorithm.AUTO ? CompressionAlgorithm.ZLIB : configured;
     }
 
     public static void setEffectiveAlgorithm(CompressionAlgorithm algo) {

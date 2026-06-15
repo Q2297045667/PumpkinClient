@@ -35,7 +35,7 @@ public abstract class CompressionEncoderMixin {
             byte[] data = new byte[size];
             in.readBytes(data);
             byte[] compressed = NetworkCompression.compress(data, CompressionAlgorithm.ZSTD,
-                    config.getCompressionLevel(), config.getMaxThreads());
+                    config.getCompressionLevel());
             new FriendlyByteBuf(out).writeVarInt(size);
             out.writeBytes(compressed);
         }

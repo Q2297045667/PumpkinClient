@@ -5,7 +5,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.CompressionDecoder;
 import org.pumpkinclient.pumpkinclient.Pumpkinclient;
-import org.pumpkinclient.pumpkinclient.config.PumpkinConfig;
 import org.pumpkinclient.pumpkinclient.network.CompressionAlgorithm;
 import org.pumpkinclient.pumpkinclient.network.NetworkCompression;
 import org.slf4j.Logger;
@@ -27,8 +26,7 @@ public abstract class CompressionDecoderMixin {
 
     @Inject(method = "setupInflaterInput", at = @At("HEAD"))
     private void onSetupInflaterInput(ByteBuf buf, CallbackInfo ci) {
-        CompressionAlgorithm configured = Pumpkinclient.getConfig().getCompressionAlgorithm();
-        if (configured == CompressionAlgorithm.ZLIB) {
+        if (isVanillaZlib()) {
             return;
         }
         pumpkinCompressedData = new byte[buf.readableBytes()];
@@ -37,18 +35,26 @@ public abstract class CompressionDecoderMixin {
 
     @Inject(method = "inflate", at = @At("HEAD"), cancellable = true)
     private void onInflate(ChannelHandlerContext ctx, int uncompressedSize, CallbackInfoReturnable<ByteBuf> cir) {
-        CompressionAlgorithm configured = Pumpkinclient.getConfig().getCompressionAlgorithm();
-        if (configured == CompressionAlgorithm.ZLIB) {
+        if (isVanillaZlib()) {
             return;
         }
         if (pumpkinCompressedData == null) {
             return;
         }
 
+        byte[] data = pumpkinCompressedData;
+        pumpkinCompressedData = null;
+
+        if (uncompressedSize == 0) {
+            cir.setReturnValue(Unpooled.wrappedBuffer(data));
+            return;
+        }
+
+        CompressionAlgorithm configured = Pumpkinclient.getConfig().getCompressionAlgorithm();
         CompressionAlgorithm effective = Pumpkinclient.getEffectiveAlgorithm();
 
         try {
-            byte[] decompressed = NetworkCompression.decompress(pumpkinCompressedData, uncompressedSize, effective);
+            byte[] decompressed = NetworkCompression.decompress(data, uncompressedSize, effective);
             cir.setReturnValue(Unpooled.wrappedBuffer(decompressed));
         } catch (Exception firstError) {
             if (configured != CompressionAlgorithm.AUTO) {
@@ -57,21 +63,24 @@ public abstract class CompressionDecoderMixin {
                                 + configured.getId() + ". Try switching to Auto mode.", firstError);
             }
 
-            CompressionAlgorithm fallback = effective == CompressionAlgorithm.ZSTD
-                    ? CompressionAlgorithm.ZLIB : CompressionAlgorithm.ZSTD;
+            CompressionAlgorithm fallback = effective.fallback();
             LOGGER.warn("Auto-detect: {} failed, trying {}...", effective.getId(), fallback.getId());
 
             try {
-                byte[] decompressed = NetworkCompression.decompress(pumpkinCompressedData, uncompressedSize, fallback);
+                byte[] decompressed = NetworkCompression.decompress(data, uncompressedSize, fallback);
                 cir.setReturnValue(Unpooled.wrappedBuffer(decompressed));
                 LOGGER.info("Auto-detect: server uses {}. Switching.", fallback.getId());
                 Pumpkinclient.setEffectiveAlgorithm(fallback);
             } catch (Exception secondError) {
                 throw new RuntimeException(
-                        "Decompression failed: could not determine server compression algorithm. "
-                                + "Tried " + effective.getId() + " and " + fallback.getId() + ".",
+                        "Decompression failed: tried " + effective.getId() + " and " + fallback.getId() + ".",
                         firstError);
             }
         }
+    }
+
+    @Unique
+    private static boolean isVanillaZlib() {
+        return Pumpkinclient.getConfig().getCompressionAlgorithm() == CompressionAlgorithm.ZLIB;
     }
 }

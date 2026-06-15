@@ -23,7 +23,7 @@ public final class PumpkinConfig {
                     (JsonDeserializer<CompressionAlgorithm>) (json, type, context) ->
                             CompressionAlgorithm.fromId(json.getAsString()))
             .create();
-    private static PumpkinConfig INSTANCE;
+    private static volatile PumpkinConfig INSTANCE;
 
     @Expose
     private CompressionAlgorithm compressionAlgorithm = CompressionAlgorithm.AUTO;
@@ -39,7 +39,11 @@ public final class PumpkinConfig {
 
     public static PumpkinConfig getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new PumpkinConfig();
+            synchronized (PumpkinConfig.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new PumpkinConfig();
+                }
+            }
         }
         return INSTANCE;
     }
@@ -48,8 +52,8 @@ public final class PumpkinConfig {
         return compressionAlgorithm;
     }
 
-    public void setCompressionAlgorithm(CompressionAlgorithm compressionAlgorithm) {
-        this.compressionAlgorithm = compressionAlgorithm;
+    public void setCompressionAlgorithm(CompressionAlgorithm algorithm) {
+        this.compressionAlgorithm = algorithm;
         clampLevel();
     }
 
@@ -57,11 +61,8 @@ public final class PumpkinConfig {
         return compressionLevel;
     }
 
-    public void setCompressionLevel(int compressionLevel) {
-        this.compressionLevel = switch (compressionAlgorithm) {
-            case ZSTD, AUTO -> NetworkCompression.clampZstdLevel(compressionLevel);
-            case ZLIB -> NetworkCompression.clampZlibLevel(compressionLevel);
-        };
+    public void setCompressionLevel(int level) {
+        this.compressionLevel = clamp(level);
     }
 
     public int getMaxThreads() {
@@ -76,8 +77,10 @@ public final class PumpkinConfig {
         if (Files.exists(configPath)) {
             try {
                 String json = Files.readString(configPath);
-                INSTANCE = GSON.fromJson(json, PumpkinConfig.class);
-                if (INSTANCE == null) {
+                PumpkinConfig loaded = GSON.fromJson(json, PumpkinConfig.class);
+                if (loaded != null) {
+                    INSTANCE = loaded;
+                } else {
                     INSTANCE = new PumpkinConfig();
                 }
                 clampLevel();
@@ -96,17 +99,20 @@ public final class PumpkinConfig {
     public void save(Path configPath) {
         try {
             Files.createDirectories(configPath.getParent());
-            String json = GSON.toJson(this);
-            Files.writeString(configPath, json, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(configPath, GSON.toJson(this), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             LOGGER.error("Failed to save config", e);
         }
     }
 
     private void clampLevel() {
-        compressionLevel = switch (compressionAlgorithm) {
-            case ZSTD, AUTO -> NetworkCompression.clampZstdLevel(compressionLevel);
-            case ZLIB -> NetworkCompression.clampZlibLevel(compressionLevel);
+        this.compressionLevel = clamp(compressionLevel);
+    }
+
+    private int clamp(int level) {
+        return switch (compressionAlgorithm) {
+            case ZSTD, AUTO -> NetworkCompression.clampZstdLevel(level);
+            case ZLIB -> NetworkCompression.clampZlibLevel(level);
         };
     }
 }
