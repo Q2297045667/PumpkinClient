@@ -27,8 +27,8 @@ public abstract class CompressionDecoderMixin {
 
     @Inject(method = "setupInflaterInput", at = @At("HEAD"))
     private void onSetupInflaterInput(ByteBuf buf, CallbackInfo ci) {
-        CompressionAlgorithm effective = Pumpkinclient.getEffectiveAlgorithm();
-        if (effective == CompressionAlgorithm.ZLIB) {
+        CompressionAlgorithm configured = Pumpkinclient.getConfig().getCompressionAlgorithm();
+        if (configured == CompressionAlgorithm.ZLIB) {
             return;
         }
         pumpkinCompressedData = new byte[buf.readableBytes()];
@@ -37,15 +37,15 @@ public abstract class CompressionDecoderMixin {
 
     @Inject(method = "inflate", at = @At("HEAD"), cancellable = true)
     private void onInflate(ChannelHandlerContext ctx, int uncompressedSize, CallbackInfoReturnable<ByteBuf> cir) {
-        CompressionAlgorithm effective = Pumpkinclient.getEffectiveAlgorithm();
-        if (effective == CompressionAlgorithm.ZLIB) {
+        CompressionAlgorithm configured = Pumpkinclient.getConfig().getCompressionAlgorithm();
+        if (configured == CompressionAlgorithm.ZLIB) {
             return;
         }
         if (pumpkinCompressedData == null) {
             return;
         }
 
-        CompressionAlgorithm configured = Pumpkinclient.getConfig().getCompressionAlgorithm();
+        CompressionAlgorithm effective = Pumpkinclient.getEffectiveAlgorithm();
 
         try {
             byte[] decompressed = NetworkCompression.decompress(pumpkinCompressedData, uncompressedSize, effective);
