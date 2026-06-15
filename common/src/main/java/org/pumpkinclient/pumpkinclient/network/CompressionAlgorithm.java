@@ -1,8 +1,8 @@
 package org.pumpkinclient.pumpkinclient.network;
 
 public enum CompressionAlgorithm {
-    ZLIB("zlib"),
-    ZSTD("zstd");
+    ZLIB("ZLib"),
+    ZSTD("Zstd");
 
     private final String id;
 
@@ -20,6 +20,6 @@ public enum CompressionAlgorithm {
                 return algo;
             }
         }
-        return ZSTD;
+        return ZLIB;
     }
 }

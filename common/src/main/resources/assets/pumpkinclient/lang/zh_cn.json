@@ -1,8 +1,10 @@
 {
   "pumpkinclient.config.compression_algorithm": "压缩算法",
   "pumpkinclient.config.compression_level": "压缩等级",
+  "pumpkinclient.config.max_threads": "最大线程数 (Zstd)",
+  "pumpkinclient.config.max_threads.tooltip": "Zstd 压缩线程数，0 = 自动检测。",
   "pumpkinclient.config.title": "PumpkinClient 设置",
-  "pumpkinclient.algorithm.zlib": "ZLIB",
-  "pumpkinclient.algorithm.zstd": "ZSTD (zstd)",
-  "pumpkinclient.config.restart_required": "切换后需要重启游戏才能生效"
+  "pumpkinclient.config.restart_required": "切换后需要重启游戏才能生效",
+  "pumpkinclient.algorithm.ZLib": "ZLib",
+  "pumpkinclient.algorithm.Zstd": "Zstd"
 }

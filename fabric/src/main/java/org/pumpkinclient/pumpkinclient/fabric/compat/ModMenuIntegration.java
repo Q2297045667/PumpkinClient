@@ -32,7 +32,7 @@ public final class ModMenuIntegration implements ModMenuApi {
                         Component.translatable("pumpkinclient.config.compression_algorithm"),
                         CompressionAlgorithm.class,
                         config.getCompressionAlgorithm())
-                .setDefaultValue(CompressionAlgorithm.ZSTD)
+                .setDefaultValue(CompressionAlgorithm.ZLIB)
                 .setSaveConsumer(config::setCompressionAlgorithm)
                 .setEnumNameProvider(anEnum -> Component.translatable("pumpkinclient.algorithm." + ((CompressionAlgorithm) anEnum).getId()))
                 .setTooltip(Component.translatable("pumpkinclient.config.restart_required"))
@@ -41,9 +41,18 @@ public final class ModMenuIntegration implements ModMenuApi {
         category.addEntry(entryBuilder.startIntSlider(
                         Component.translatable("pumpkinclient.config.compression_level"),
                         config.getCompressionLevel(),
-                        0, 22)
-                .setDefaultValue(3)
+                        0, 9)
+                .setDefaultValue(4)
                 .setSaveConsumer(config::setCompressionLevel)
+                .build());
+
+        category.addEntry(entryBuilder.startIntSlider(
+                        Component.translatable("pumpkinclient.config.max_threads"),
+                        config.getMaxThreads(),
+                        0, 32)
+                .setDefaultValue(0)
+                .setTooltip(Component.translatable("pumpkinclient.config.max_threads.tooltip"))
+                .setSaveConsumer(config::setMaxThreads)
                 .build());
 
         return builder.build();

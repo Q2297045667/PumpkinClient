@@ -22,10 +22,13 @@ public final class PumpkinConfig {
     private static PumpkinConfig INSTANCE;
 
     @Expose
-    private CompressionAlgorithm compressionAlgorithm = CompressionAlgorithm.ZSTD;
+    private CompressionAlgorithm compressionAlgorithm = CompressionAlgorithm.ZLIB;
 
     @Expose
-    private int compressionLevel = 3;
+    private int compressionLevel = 4;
+
+    @Expose
+    private int maxThreads = 0;
 
     private PumpkinConfig() {
     }
@@ -57,6 +60,14 @@ public final class PumpkinConfig {
         };
     }
 
+    public int getMaxThreads() {
+        return maxThreads;
+    }
+
+    public void setMaxThreads(int maxThreads) {
+        this.maxThreads = Math.clamp(maxThreads, 0, 32);
+    }
+
     public void load(Path configPath) {
         if (Files.exists(configPath)) {
             try {
@@ -66,7 +77,8 @@ public final class PumpkinConfig {
                     INSTANCE = new PumpkinConfig();
                 }
                 clampLevel();
-                LOGGER.info("Loaded config: algorithm={}, level={}", compressionAlgorithm.getId(), compressionLevel);
+                LOGGER.info("Loaded config: algorithm={}, level={}, maxThreads={}",
+                        compressionAlgorithm.getId(), compressionLevel, maxThreads);
             } catch (IOException e) {
                 LOGGER.error("Failed to load config, using defaults", e);
                 INSTANCE = new PumpkinConfig();

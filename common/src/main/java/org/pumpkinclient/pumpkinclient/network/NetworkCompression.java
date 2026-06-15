@@ -9,7 +9,7 @@ public final class NetworkCompression {
     private NetworkCompression() {
     }
 
-    public static byte[] compress(byte[] input, CompressionAlgorithm algorithm, int level) {
+    public static byte[] compress(byte[] input, CompressionAlgorithm algorithm, int level, int maxThreads) {
         return switch (algorithm) {
             case ZLIB -> compressZlib(input, level);
             case ZSTD -> compressZstd(input, level);
